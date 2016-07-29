@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    name: cassandra
+  name: cassandra
+spec:
+  replicas: 3
+  triggers:
+  - type: ConfigChange
+  selector:
+    name: cassandra
+  template:
+    metadata:
+      labels:
+        name: cassandra
+    spec:
+      serviceAccountName: anyuid
+      containers:
+      - image: jam13/cassandra
+        imagePullPolicy: IfNotPresent
+        name: cassandra
+        env:
+        - name: PEER_DISCOVERY_SERVICE
+          value: cassandra-peers
+        # Feel free to change the following:
+        - name: CASSANDRA_CLUSTER_NAME
+          value: Cassandra
+        - name: CASSANDRA_DC
+          value: DC1
+        - name: CASSANDRA_RACK
+          value: Kubernetes Cluster
+        - name: CASSANDRA_ENDPOINT_SNITCH
+          value: GossipingPropertyFileSnitch
+        ports:
+        - containerPort: 7199
+          name: jmx
+        - containerPort: 9042
+          name: cql
+        - containerPort: 9160
+          name: thrift
+        volumeMounts:
+        - mountPath: /var/lib/cassandra/data
+          name: data
+      volumes:
+      - name: data
+        emptyDir: {}

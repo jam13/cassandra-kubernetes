@@ -5,4 +5,4 @@ if [ "$branch" == master ]; then
     branch=latest
 fi
 
-docker build -q -t vyshane/cassandra:$branch .
+docker build -q -t jam13/cassandra:$branch .
